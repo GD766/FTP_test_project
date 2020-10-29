@@ -6,11 +6,11 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, IdBaseComponent,
   IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase,
-  IdFTP, IdCustomTCPServer, IdTCPServer, IdCmdTCPServer, IdFTPServer;
+  IdFTP;
 
 type
   TForm1 = class(TForm)
-    DownloadButton: TButton;
+    ConnectButton: TButton;
     idFTP: TIdFTP;
     HostEdit: TEdit;
     UsernameEdit: TEdit;
@@ -22,9 +22,7 @@ type
     LocalPathLable: TLabel;
     FTPPathLable: TLabel;
     FTPPathEdit: TEdit;
-    UploadButton: TButton;
-    procedure DownloadButtonClick(Sender: TObject);
-    procedure UploadButtonClick(Sender: TObject);
+    procedure ConnectButtonClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -38,7 +36,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.DownloadButtonClick(Sender: TObject);
+procedure TForm1.ConnectButtonClick(Sender: TObject);
 begin
   idFTP.Username:= UsernameEdit.Text;
   idFTP.Password:= PasswordEdit.Text;
@@ -78,53 +76,4 @@ begin
     end;
 end;
 
-procedure TForm1.UploadButtonClick(Sender: TObject);
-  begin
-    idFTP.Username:= UsernameEdit.Text;
-    idFTP.Password:= PasswordEdit.Text;
-    idFTP.Host:= HostEdit.Text;
-    idFTP.Passive:= True;
-    if idFTP.Connected then
-    begin
-      idFTP.Disconnect;
-      try
-        idFTP.Connect();
-      except
-        on E : Exception do
-          ShowMessage('Ошибка подключения: '+E.Message);
-      end;
-      if idFTP.Connected then
-      try
-        idFTP.Put(FTPPathEdit.Text, LocalPathEdit.Text, True);
-      except
-        on E : Exception do
-          ShowMessage('Ошибка загрузки файла: '+E.Message);
-      end;
-    end
-  else
-    try
-      idFTP.Connect();
-    except
-      on E : Exception do
-        ShowMessage('Ошибка подключения: '+E.Message);
-    end;
-  if idFTP.Connected then
-    try
-      idFTP.Get(FTPPathEdit.Text, LocalPathEdit.Text, True);
-    except
-      on E : Exception do
-        ShowMessage('Ошибка загрузки файла: '+E.Message);
-    end;
-
-  (*idFTP.Disconnect;
-    idFTP.Host:=HostEdit.Text;   //FTP-сервер
-    idFTP.Port:=21;                  //порт ФТП сервера
-    idFTP.Username:=UsernameEdit.Text;
-    idFTP.Password:=PasswordEdit.Text;
-    idFTP.Connect;
-    idFTP.Put(LocalPathEdit.Text, FTPPathEdit.Text, True);
-    //idFTP.Put('Файл_который_нужно_загрузить_на_сервер');
-    idFTP.Disconnect; *)
-
-  end;
 end.
